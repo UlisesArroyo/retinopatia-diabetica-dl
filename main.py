@@ -5,7 +5,7 @@ from train import train
 from utils.save_info import Util
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='')
 
