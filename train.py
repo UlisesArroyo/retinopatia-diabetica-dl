@@ -5,21 +5,16 @@ from models.resnet101 import resNet101
 from models.convnext import convNextSmall
 from tqdm import tqdm
 from utils.save_info import Util
+from eval import eval
 
 
 def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
-          batch, workers, momentum, weigth_decay, device):
+          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, device):
 
     dataloader_train = DataLoader(
         DrDataset(data + 'train.json', 'train'),
-        batch_size=batch,
-        num_workers=workers,
-    )
-
-    dataloader_valid = DataLoader(
-        DrDataset(data + 'valid.json', 'valid'),
-        batch_size=batch,
-        num_workers=workers
+        batch_size=batch_t,
+        num_workers=workers_t,
     )
 
     device = torch.device(device)
@@ -28,9 +23,11 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
 
     if model_load is None:
         start_epoch = 0
+
         if model_str == 'resnet':
             model = resNet101(classes)
-        else:
+
+        if model_str == 'convnext':
             model = convNextSmall(classes)
 
         optimizer = torch.optim.Adam(
@@ -46,11 +43,14 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
     criterion = torch.nn.CrossEntropyLoss()
 
     for epoch in range(start_epoch, epochs):
+
         train_one_epoch(model, dataloader_train, optimizer,
                         criterion, epoch, device, json_result
                         )
 
-        Util.save_checkpoint(epoch, model,optimizer, dump)
+        Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
+
+        eval(dump, data, batch_s, workers_s, device, 'valid', False)
 
 
 def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, epoch, device, json_result):
@@ -75,7 +75,7 @@ def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, e
         loss.backward()
         optimizer.step()
         process_bar.set_description_str(
-            'Epoch {} : Loss: {:.3f}'.format(epoch, float(loss)), True)
+            'Epoch {} : Loss: {:.3f}'.format(epoch + 1, float(loss)), True)
 
     Util.guardarLoss(json_result, loss_total/len(dataloader))
-    print('Perdida promedio: {}'.format(loss_total/len(dataloader)))
+    print('Perdida promedio: {:.4f}'.format(loss_total/len(dataloader)))

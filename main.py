@@ -1,5 +1,6 @@
 import argparse
 import os
+from sys import exit
 from eval import eval
 from train import train
 from utils.save_info import Util
@@ -36,7 +37,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if not os.path.exists('./runs'):
+        os.makedirs('./runs', exist_ok=True)
+
     if args.train:
+
+        if args.model is None or args.model not in ['resnet', 'convnext']:
+            print('Elige un modelo a entrenar')
+            exit()
 
         if args.json_result is not None:
             json_result = args.json_result
@@ -45,13 +53,18 @@ if __name__ == '__main__':
 
         if args.dump is not None:
             dump = args.dump
+            print('Elije donde guardar tu modelo')
+            exit()
 
         if args.dataloader_json is not None:
             dataloader_json = args.dataloader_json
+            print('Ingresa tu JSON de tu base de datos')
+            exit()
 
         epoch, lr, decay_lr, batch, workers, momentum, weigth_decay, device = args.epochs, args.lr, args.decay_lr, args.batch, args.workers, args.momentum, args.weigth_decay, args.device
 
         model_load = args.load_model
 
         train(args.model, model_load, json_result, dump,
-              dataloader_json, epoch, lr, decay_lr, batch, workers, momentum, weigth_decay, device)
+              dataloader_json, epoch, lr, decay_lr, batch, batch,
+              workers, workers, momentum, weigth_decay, device)

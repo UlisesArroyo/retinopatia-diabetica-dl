@@ -7,8 +7,9 @@ class Util():
     def __init__():
         super()
 
-    def save_checkpoint(epoch, model, optimizer, filename):
+    def save_checkpoint(epoch, model, optimizer, filename, model_str):
         state = {
+            'str': model_str,
             'epoch': epoch,
             'model': model,
             'optimizer': optimizer

@@ -9,7 +9,7 @@ class DrDataset(Dataset):
         super()
         self.root = root
 
-        with open(root ,'r') as file:
+        with open(root, 'r') as file:
             data = json.load(file)
 
         self.transforms = {
@@ -36,7 +36,8 @@ class DrDataset(Dataset):
 
         image, label = self.imgs[index], self.labels[index]
         image = Image.open(image)
-        image = self.transforms[self.set](image)
+        if self.set != 'test':
+            image = self.transforms[self.set](image)
         return image, label, self.imgs[index]
 
     def __len__(self):
