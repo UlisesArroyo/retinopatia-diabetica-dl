@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('--txt', default=None)
     parser.add_argument('--path_src', default=None)
     parser.add_argument('--save_json', default=None)
-
+    parser.add_argument('--set', default='train')
     args = parser.parse_args()
 
     if not os.path.exists('./runs'):
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     if args.txt2json:
         if args.txt is None or args.path_src is None:
             exit()
-        Util.txt2json(args.txt, args.path_src, args.save_json)
+        Util.txt2json(args.txt, args.path_src, args.save_json, args.set)
 
     if args.train:
 

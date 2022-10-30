@@ -8,7 +8,7 @@ class Util():
     def __init__():
         super()
 
-    def txt2json(file, path_src, path_to):
+    def txt2json(file, path_src, path_to, set):
 
         data = {
             "filenames": [],
@@ -20,7 +20,7 @@ class Util():
                 data['filenames'].append(path_src + '/' + info.split(' ')[0])
                 data['labels'].append(int(info.split(' ')[1].rstrip('\n')))
 
-        with open(path_to, 'w') as file:
+        with open('{}_{}.json'.format(path_to, set), 'w') as file:
             json.dump(data, file)
 
         print('Se ha generado el JSON en {}'.format(path_to))
