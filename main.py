@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('--txt2json', action='store_true', default=False)
 
     # Hyperparametros
-    parser.add_argument('--epochs', type=int, default=40)
+    parser.add_argument('--epochs', type=int, default=1)
     parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--decay_lr', type=float, default=0.1)
     parser.add_argument('--batch', type=int, default=16)
@@ -75,5 +75,5 @@ if __name__ == '__main__':
         model_load = args.load_model
 
         train(args.model, model_load, json_result, dump,
-              dataloader_json, epoch, lr, decay_lr, batch, batch,
-              workers, workers, momentum, weigth_decay, device)
+              dataloader_json, epoch, lr, decay_lr, batch, 1,
+              workers, 1, momentum, weigth_decay, device)

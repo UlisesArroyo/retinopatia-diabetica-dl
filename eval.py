@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
 from tqdm import tqdm
+from sklearn.metrics import accuracy_score, precision_score
 
 
 def eval(model_load: str, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
@@ -21,6 +22,7 @@ def eval(model_load: str, data: str, batch: int, workers: int, device: str, set:
 
     print('Modelo {} Epoca: {}'.format(model_str, epoch))
 
+    model = model.to(device)
     model.eval()
     process_bar = tqdm(enumerate(dataloader), total=len(dataloader))
 
@@ -32,4 +34,8 @@ def eval(model_load: str, data: str, batch: int, workers: int, device: str, set:
         label = label.to(device)
 
         pred = model(image)
+
+        print(pred)
+        print(label)
+
         process_bar.set_description_str('Set: {}'.format(), True)

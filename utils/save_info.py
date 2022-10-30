@@ -8,6 +8,33 @@ class Util():
     def __init__():
         super()
 
+    def createInfoXepoch(filename):
+        data = {
+            'stats': []
+        }
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+
+    def saveInfoXepoch(filename, epoch, acc, aps):
+
+        with open(filename, 'r') as file:
+            datos = json.load(file)
+
+        data = {
+            "epoch": epoch,
+            "acc": acc,
+            "none": aps[0],
+            "mild": aps[1],
+            "moderate": aps[2],
+            "severe": aps[3],
+            "pro_dr": aps[4]
+        }
+
+        datos['stats'].append(data)
+
+        with open(filename, 'w') as file:
+            json.dump(datos, file)
+
     def txt2json(file, path_src, path_to, set):
 
         data = {
