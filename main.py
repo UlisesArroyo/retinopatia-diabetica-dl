@@ -48,8 +48,6 @@ if __name__ == '__main__':
         if args.txt is None or args.path_src is None:
             exit()
         Util.txt2json(args.txt, args.path_src, args.save_json, args.set)
-        Util.createInfoXepoch(os.path.dirname(
-            args.save_json) + '/info_train_{}.json'.format(args.model))
 
     if args.train:
 
@@ -61,6 +59,10 @@ if __name__ == '__main__':
             json_result = args.json_result
             if not os.path.exists(args.json_result):
                 Util.generarJSON(json_result)
+            if not os.path.exists(os.path.dirname(
+                    args.save_json) + '/info_train_{}.json'.format(args.model)):
+                Util.createInfoXepoch(os.path.dirname(
+                    args.save_json) + '/info_train_{}.json'.format(args.model))
 
         if args.dump is None:
             print('Elije donde guardar tu modelo')
