@@ -15,6 +15,7 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
         DrDataset(data + 'train.json', 'train'),
         batch_size=batch_t,
         num_workers=workers_t,
+        shuffle=True
     )
 
     device = torch.device(device)
@@ -42,6 +43,8 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
     model = model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
 
+    data_eval = './JSONFiles/DDR/DDR_'
+
     for epoch in range(start_epoch, epochs):
 
         train_one_epoch(model, dataloader_train, optimizer,
@@ -50,7 +53,7 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
 
         Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
 
-        eval(dump, data, batch_s, workers_s, device, 'valid', False)
+        eval(model, data_eval, batch_s, workers_s, device, 'valid', False)
 
 
 def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, epoch, device, json_result):

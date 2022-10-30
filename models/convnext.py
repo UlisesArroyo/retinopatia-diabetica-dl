@@ -1,4 +1,4 @@
-from torchvision.models import convnext_small
+from torchvision.models import convnext_small, ConvNeXt_Small_Weights
 from torchvision.models.convnext import LayerNorm2d
 import torch.nn as nn
 

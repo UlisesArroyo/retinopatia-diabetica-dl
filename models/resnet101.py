@@ -1,4 +1,4 @@
-from torchvision.models import resnet101
+from torchvision.models import resnet101, ResNet101_Weights
 import torch.nn as nn
 
 

@@ -44,8 +44,9 @@ class Util():
 
         with open(file, 'r') as arch:
             for info in arch:
-                data['filenames'].append(path_src + '/' + info.split(' ')[0])
-                data['labels'].append(int(info.split(' ')[1].rstrip('\n')))
+                if int(info.split(' ')[1].rstrip('\n')) != 5:
+                    data['filenames'].append(path_src + '/' + info.split(' ')[0])
+                    data['labels'].append(int(info.split(' ')[1].rstrip('\n')))
 
         with open('{}_{}.json'.format(path_to, set), 'w') as file:
             json.dump(data, file)

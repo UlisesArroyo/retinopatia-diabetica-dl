@@ -60,15 +60,17 @@ if __name__ == '__main__':
             if not os.path.exists(args.json_result):
                 Util.generarJSON(json_result)
 
-        if args.dump is not None:
-            dump = args.dump
+        if args.dump is None:
             print('Elije donde guardar tu modelo')
             exit()
 
-        if args.dataloader_json is not None:
-            dataloader_json = args.dataloader_json
+        dump = args.dump
+
+        if args.dataloader_json is None:
             print('Ingresa tu JSON de tu base de datos')
             exit()
+        
+        dataloader_json = args.dataloader_json
 
         epoch, lr, decay_lr, batch, workers, momentum, weigth_decay, device = args.epochs, args.lr, args.decay_lr, args.batch, args.workers, args.momentum, args.weigth_decay, args.device
 
