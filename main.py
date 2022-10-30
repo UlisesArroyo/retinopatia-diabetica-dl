@@ -48,6 +48,8 @@ if __name__ == '__main__':
         if args.txt is None or args.path_src is None:
             exit()
         Util.txt2json(args.txt, args.path_src, args.save_json, args.set)
+        Util.createInfoXepoch(os.path.dirname(
+            args.save_json) + '/info_train_{}.json'.format(args.model))
 
     if args.train:
 
@@ -69,7 +71,7 @@ if __name__ == '__main__':
         if args.dataloader_json is None:
             print('Ingresa tu JSON de tu base de datos')
             exit()
-        
+
         dataloader_json = args.dataloader_json
 
         epoch, lr, decay_lr, batch, workers, momentum, weigth_decay, device = args.epochs, args.lr, args.decay_lr, args.batch, args.workers, args.momentum, args.weigth_decay, args.device

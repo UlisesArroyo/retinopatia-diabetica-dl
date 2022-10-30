@@ -6,9 +6,10 @@ from models.convnext import convNextSmall
 from tqdm import tqdm
 from utils.save_info import Util
 from eval import eval
+import os
 
 
-def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
+def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay_lr,
           batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, device):
 
     dataloader_train = DataLoader(
@@ -44,7 +45,7 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
     criterion = torch.nn.CrossEntropyLoss()
 
     data_eval = './JSONFiles/DDR/DDR_'
-
+    best = 0.0
     for epoch in range(start_epoch, epochs):
 
         train_one_epoch(model, dataloader_train, optimizer,
@@ -53,7 +54,16 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
 
         Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
 
-        eval(model, data_eval, batch_s, workers_s, device, 'valid', False)
+        acc, aps = eval(model, data_eval, batch_s,
+                        workers_s, device, 'valid', False)
+
+        Util.saveInfoXepoch(os.path.dirname(json_result) +
+                            '/info_train_{}.json'.format(model_str), epoch, acc, aps)
+
+        if best < acc:
+            dump = dump.split('.')
+            dump = dump[0] + '_best' + '.pth'
+            Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
 
 
 def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, epoch, device, json_result):
