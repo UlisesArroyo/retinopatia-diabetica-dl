@@ -11,15 +11,15 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
           batch, workers, momentum, weigth_decay, device):
 
     dataloader_train = DataLoader(
-        DrDataset(data + 'train.json'),
+        DrDataset(data + 'train.json', 'train'),
         batch_size=batch,
         num_workers=workers,
     )
 
-    dataloader_test = DataLoader(
-        DrDataset(data + 'test.json'),
+    dataloader_valid = DataLoader(
+        DrDataset(data + 'valid.json', 'valid'),
         batch_size=batch,
-        num_workers=workers,
+        num_workers=workers
     )
 
     device = torch.device(device)
@@ -28,7 +28,7 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
 
     if model_load is None:
         start_epoch = 0
-        if model_str is 'resnet':
+        if model_str == 'resnet':
             model = resNet101(classes)
         else:
             model = convNextSmall(classes)
