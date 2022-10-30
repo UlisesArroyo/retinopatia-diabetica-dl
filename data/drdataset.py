@@ -1,4 +1,5 @@
-from torch.utils.data import Dataset, trans
+from torch.utils.data import Dataset
+from PIL import Image
 from torchvision import transforms
 import json
 
@@ -8,8 +9,8 @@ class DrDataset(Dataset):
         super()
         self.root = root
 
-        with open(root + 'r') as file:
-            data = json.load()
+        with open(root ,'r') as file:
+            data = json.load(file)
 
         self.transforms = {
             'train': transforms.Compose([
@@ -34,6 +35,7 @@ class DrDataset(Dataset):
     def __getitem__(self, index):
 
         image, label = self.imgs[index], self.labels[index]
+        image = Image.open(image)
         image = self.transforms[self.set](image)
         return image, label, self.imgs[index]
 

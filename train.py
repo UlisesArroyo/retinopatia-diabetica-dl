@@ -50,7 +50,7 @@ def train(model_str, model_load, json_result, dump, data, epochs, lr, decay_lr,
                         criterion, epoch, device, json_result
                         )
 
-        Util.save_checkpoint(dump)
+        Util.save_checkpoint(epoch, model,optimizer, dump)
 
 
 def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, epoch, device, json_result):
