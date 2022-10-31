@@ -16,7 +16,7 @@ def convNextSmall(n_class):
                     n_inputs = sub_child.in_features
     print('n_iNPUTS: ', n_inputs)
     sequential_layers = nn.Sequential(
-        LayerNorm2d((1024,), eps=1e-06, elementwise_affine=True),
+        LayerNorm2d((768,), eps=1e-06, elementwise_affine=True),
         nn.Flatten(start_dim=1, end_dim=-1),
         nn.Linear(n_inputs, 2048, bias=True),
         nn.BatchNorm1d(2048),
