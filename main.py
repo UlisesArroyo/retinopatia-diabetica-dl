@@ -60,7 +60,7 @@ if __name__ == '__main__':
             if not os.path.exists(args.json_result):
                 Util.generarJSON(json_result)
             if not os.path.exists(os.path.dirname(
-                    args.save_json) + '/info_train_{}.json'.format(args.model)):
+                    args.json_result) + '/info_train_{}.json'.format(args.model)):
                 Util.createInfoXepoch(os.path.dirname(
                     args.save_json) + '/info_train_{}.json'.format(args.model))
 
