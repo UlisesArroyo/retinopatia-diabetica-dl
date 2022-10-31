@@ -53,7 +53,7 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
                         )
 
         Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
-
+        print('Evaluando....')
         acc, aps = eval(model, data_eval, batch_s,
                         workers_s, device, 'valid', False)
 
@@ -61,8 +61,9 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
                             '/info_train_{}.json'.format(model_str), epoch, acc, aps)
 
         if best < acc:
-            dump = dump.split('.')
-            dump = dump[0] + '_best' + '.pth'
+            dump = os.path.dirname(json_result) + \
+                '/{}_best.pth'.format(model_str)
+            best = acc
             Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
 
 
