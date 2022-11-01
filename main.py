@@ -1,7 +1,7 @@
 import argparse
 import os
 from sys import exit
-from eval import eval
+from eval import eval, bestEpoch
 from train import train
 from utils.save_info import Util
 
@@ -40,6 +40,10 @@ if __name__ == '__main__':
     parser.add_argument('--save_json', default=None)
     parser.add_argument('--set', default='train')
     args = parser.parse_args()
+
+    if args.eval:
+        bestEpoch('./runs/kaggle_2/convnext_best.pth')
+        exit()
 
     if not os.path.exists('./runs'):
         os.makedirs('./runs', exist_ok=True)

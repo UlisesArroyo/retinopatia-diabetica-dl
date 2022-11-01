@@ -5,6 +5,13 @@ from tqdm import tqdm
 from sklearn.metrics import accuracy_score, precision_score
 
 
+def bestEpoch(model_load: str):
+    
+    checkpoint = torch.load(model_load)
+    epoch = checkpoint['epoch']
+
+    print(epoch)
+
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
 
     dataloader = DataLoader(

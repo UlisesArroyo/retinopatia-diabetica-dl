@@ -46,6 +46,7 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
     data_eval = './JSONFiles/DDR/DDR_'
     best = 0.0
+    best_dump = ''
     for epoch in range(start_epoch, epochs):
 
         train_one_epoch(model, dataloader_train, optimizer,
@@ -61,10 +62,10 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
                             '/info_train_{}.json'.format(model_str), epoch, acc, aps)
 
         if best < acc:
-            dump = os.path.dirname(json_result) + \
+            best_dump = os.path.dirname(json_result) + \
                 '/{}_best.pth'.format(model_str)
             best = acc
-            Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
+            Util.save_checkpoint(epoch, model, optimizer, best_dump, model_str)
 
 
 def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, epoch, device, json_result):
