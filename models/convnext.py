@@ -6,7 +6,6 @@ import torch.nn as nn
 def convNextSmall(n_class):
 
     model = convnext_small(pretrained=True, progress=True)
-    print(model)
     model.named_children()
     n_inputs = None
     for name, child in model.named_children():
@@ -14,7 +13,6 @@ def convNextSmall(n_class):
             for sub_name, sub_child in child.named_children():
                 if sub_name == '2':
                     n_inputs = sub_child.in_features
-    print('n_iNPUTS: ', n_inputs)
     sequential_layers = nn.Sequential(
         LayerNorm2d((768,), eps=1e-06, elementwise_affine=True),
         nn.Flatten(start_dim=1, end_dim=-1),
