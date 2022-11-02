@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
 from tqdm import tqdm
-from sklearn.metrics import accuracy_score, precision_score
+from sklearn.metrics import accuracy_score, precision_score, confusion_matrix
 
 
 def bestEpoch(model_load: str):
@@ -15,7 +15,7 @@ def bestEpoch(model_load: str):
     device = torch.device(0)
     model.to(device)
     print(epoch)
-    eval(model, 'JSONFiles/DDR/DDR_', 8, 8, '0', 'test', True)
+    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 0, 'test', True)
 
 
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
@@ -50,3 +50,4 @@ def eval(model, data: str, batch: int, workers: int, device: str, set: str, save
 
     print(accuracy_score(trues, preds))
     print(precision_score(trues, preds, average=None))
+    print(confusion_matrix(trues, preds))

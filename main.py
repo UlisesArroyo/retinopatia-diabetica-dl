@@ -42,7 +42,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.eval:
-        bestEpoch('./runs/kaggle_2/convnext_best.pth')
+        bestEpoch('runs/resnet_kaggle/resnet_best.pth')
         exit()
 
     if not os.path.exists('./runs'):
