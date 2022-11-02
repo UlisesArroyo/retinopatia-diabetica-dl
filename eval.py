@@ -1,3 +1,4 @@
+from statistics import mode
 import torch
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
@@ -6,11 +7,16 @@ from sklearn.metrics import accuracy_score, precision_score
 
 
 def bestEpoch(model_load: str):
-    
-    checkpoint = torch.load(model_load)
-    epoch = checkpoint['epoch']
 
+    checkpoint = torch.load(model_load)
+
+    epoch = checkpoint['epoch']
+    model = checkpoint['model']
+    device = torch.device(0)
+    model.to(device)
     print(epoch)
+    eval(model, 'JSONFiles/DDR/DDR_', 8, 8, '0', 'test', True)
+
 
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
 
@@ -41,3 +47,6 @@ def eval(model, data: str, batch: int, workers: int, device: str, set: str, save
 
     if not save:
         return accuracy_score(trues, preds), precision_score(trues, preds, average=None)
+
+    print(accuracy_score(trues, preds))
+    print(precision_score(trues, preds, average=None))
