@@ -45,9 +45,27 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
     criterion = torch.nn.CrossEntropyLoss()
 
     data_eval = './JSONFiles/DDR/DDR_'
+
     best = 0.0
     best_dump = ''
+
+    acc_conteo = []
+    acc = 0.0
+
+    factor_lr = 0.8
+
     for epoch in range(start_epoch, epochs):
+
+        if len(acc_conteo) == 3:
+            if average(acc_conteo) < acc:
+                print('Decay lr...')
+                adjust_learning_rate(optimizer, factor_lr)
+                acc_conteo.clear()
+            else:
+                acc_conteo.clear()
+                acc_conteo.append()
+        else:
+            acc_conteo.append(acc)
 
         train_one_epoch(model, dataloader_train, optimizer,
                         criterion, epoch, device, json_result
@@ -94,3 +112,12 @@ def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, e
 
     Util.guardarLoss(json_result, loss_total/len(dataloader))
     print('Perdida promedio: {:.4f}'.format(loss_total/len(dataloader)))
+
+
+def adjust_learning_rate(optimizer, scale):
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = param_group['lr'] * scale
+
+
+def average(lst):
+    return sum(lst) / len(lst)
