@@ -49,7 +49,7 @@ imagen2.png 1
 
 ### **_--set_** se define si es **valid** ó **test** ó **train**
 
-- # Entrenamiento
+- # Entrenamiento desde pesos de IMAGENET
 
 ### Para entrenar se utiliza el siguiente comando
 
