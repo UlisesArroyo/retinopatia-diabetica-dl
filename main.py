@@ -63,6 +63,10 @@ if __name__ == '__main__':
 
         if args.json_result is not None:
             json_result = args.json_result
+
+            if not os.path.exists(json_result):
+                os.makedirs(str(os.path.dirname(json_result)), exist_ok=True)
+
             if not os.path.exists(args.json_result):
                 Util.generarJSON(json_result)
             if not os.path.exists(os.path.dirname(
