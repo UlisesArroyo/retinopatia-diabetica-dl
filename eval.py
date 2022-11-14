@@ -12,10 +12,10 @@ def bestEpoch(model_load: str):
 
     epoch = checkpoint['epoch']
     model = checkpoint['model']
-    device = torch.device(0)
+    device = torch.device(1)
     model.to(device)
     print(epoch)
-    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 0, 'test', True)
+    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 1, 'valid', True)
 
 
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
@@ -46,8 +46,20 @@ def eval(model, data: str, batch: int, workers: int, device: str, set: str, save
         process_bar.set_description_str('Set: {}'.format(set), True)
 
     if not save:
-        return accuracy_score(trues, preds), precision_score(trues, preds, average=None)
+        cfm = confusion_matrix(trues, preds)
+        img_total = [1253, 126, 895, 47, 182]
+        acc_class = [float(cfm[0][0])/ img_total[0], float(cfm[1][1])/ img_total[1], 
+                        float(cfm[2][2])/ img_total[2], float(cfm[3][3])/ img_total[3], 
+                        float(cfm[4][4])/ img_total[4]]
+        return accuracy_score(trues, preds), acc_class
 
     print(accuracy_score(trues, preds))
-    print(precision_score(trues, preds, average=None))
     print(confusion_matrix(trues, preds))
+    cfm = confusion_matrix(trues, preds)
+    img_total = [1253, 126, 895, 47, 182]
+    #img_total = [1880, 188, 1344, 71, 275]
+    print('0: ', float(cfm[0][0])/ img_total[0])
+    print('1: ', float(cfm[1][1])/ img_total[1])
+    print('2: ', float(cfm[2][2])/ img_total[2])
+    print('3: ', float(cfm[3][3])/ img_total[3])
+    print('4: ', float(cfm[4][4])/ img_total[4])

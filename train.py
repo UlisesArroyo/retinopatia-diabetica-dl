@@ -10,7 +10,7 @@ import os
 
 
 def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay_lr,
-          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, device):
+          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, devices):
 
     dataloader_train = DataLoader(
         DrDataset(data + 'train.json', 'train'),
@@ -19,7 +19,7 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
         shuffle=True
     )
 
-    device = torch.device(device)
+    device = torch.device(devices)
     classes = 5
     model = None
 
@@ -36,14 +36,15 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
             model.parameters(), lr, weight_decay=weigth_decay)
 
     else:
-        checkpoint = torch.load(model_load)
+        checkpoint = torch.load(model_load, map_location=device)
         start_epoch = checkpoint['epoch'] + 1
         model = checkpoint['model']
         optimizer = checkpoint['optimizer']
+        for g in optimizer.param_groups:
+            g['lr'] = lr
 
-    model = model.to(device)
     criterion = torch.nn.CrossEntropyLoss()
-
+    model = model.to(device)
     data_eval = './JSONFiles/DDR/DDR_'
 
     best = 0.0
@@ -52,20 +53,20 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
     acc_conteo = []
     acc = 0.0
 
-    factor_lr = 0.8
+    factor_lr = decay_lr
 
     for epoch in range(start_epoch, epochs):
 
-        if len(acc_conteo) == 3:
-            if average(acc_conteo) < acc:
+        if len(acc_conteo) == 5 and epoch > 30:
+            if average(acc_conteo) <= acc:
                 print('Decay lr...')
                 adjust_learning_rate(optimizer, factor_lr)
                 acc_conteo.clear()
             else:
                 acc_conteo.clear()
-                acc_conteo.append()
         else:
-            acc_conteo.append(acc)
+            if acc != 0.0:
+                acc_conteo.append(acc)
 
         train_one_epoch(model, dataloader_train, optimizer,
                         criterion, epoch, device, json_result
@@ -98,9 +99,7 @@ def train_one_epoch(model, dataloader, optimizer: torch.optim.Adam, criterion, e
 
         image = image.to(device)
         label = label.to(device)
-
         optimizer.zero_grad()
-
         pred = model(image)
 
         loss = criterion(pred, label)

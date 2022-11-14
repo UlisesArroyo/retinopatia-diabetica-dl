@@ -48,7 +48,7 @@ class Util():
                     data['filenames'].append(path_src + '/' + info.split(' ')[0])
                     data['labels'].append(int(info.split(' ')[1].rstrip('\n')))
 
-        with open('{}_{}.json'.format(path_to, set), 'w') as file:
+        with open('./JSONFiles/{}_{}.json'.format(path_to, set), 'w') as file:
             json.dump(data, file)
 
         print('Se ha generado el JSON en {}'.format(path_to))

@@ -41,12 +41,14 @@ if __name__ == '__main__':
     parser.add_argument('--set', default='train')
     args = parser.parse_args()
 
-    if args.eval:
-        bestEpoch('runs/resnet_kaggle/resnet_best.pth')
-        exit()
+    if args.eval and args.load_model is not None:
+        bestEpoch(str(args.load_model))
 
     if not os.path.exists('./runs'):
         os.makedirs('./runs', exist_ok=True)
+
+    if not os.path.exists('./JSONFiles'):
+        os.makedirs('./JSONFiles', exist_ok=True)
 
     if args.txt2json:
         if args.txt is None or args.path_src is None:
