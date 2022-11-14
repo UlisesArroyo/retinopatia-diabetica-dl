@@ -3,7 +3,6 @@
 *.pkl
 *.jpg
 *.jpeg
-*.png
 /__pycache__
 *.pth
 *.rar
