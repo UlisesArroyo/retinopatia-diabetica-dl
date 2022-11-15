@@ -2,7 +2,7 @@ from typing_extensions import override
 from torchvision.models import resnet101
 from torchvision.models.resnet import ResNet, model_urls, BasicBlock, Bottleneck
 from typing import Type, Any, Callable, Union, List, Optional
-from torch import Tensor, tensor
+from torch import Tensor, tensor, randn
 import torch.nn as nn
 import pdb
 
@@ -23,9 +23,9 @@ class ResNetCAB(ResNet):
         x = self.maxpool(x)
 
         x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        # x = self.layer2(x)
+        # x = self.layer3(x)
+        # x = self.layer4(x)
         return x
 
 
@@ -45,14 +45,10 @@ def resNet101(n_class):
 
     model = _resnet('resnet101', Bottleneck, [3, 4, 23, 3], False, False)
 
-    list_dummy = [224, 224, 3, 1]
-    dummy = tensor(list_dummy)
-
-    out = model(dummy)
+    out = model(randn(1, 3, 224, 224))
 
     print(out.size())
 
-    print(model)
     pdb.set_trace()
     model = resnet101(pretrained=True, progress=True)
 
