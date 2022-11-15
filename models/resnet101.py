@@ -1,13 +1,19 @@
 from typing_extensions import override
 from torchvision.models import resnet101
-from torchvision.models.resnet import ResNet, model_urls, BasicBlock, Bottleneck, load_state_dict_from_url
+from torchvision.models.resnet import ResNet, model_urls, BasicBlock, Bottleneck
 from typing import Type, Any, Callable, Union, List, Optional
-from torch import Tensor
+from torch import Tensor, tensor
 import torch.nn as nn
 import pdb
 
 
 class ResNetCAB(ResNet):
+
+    def GAB(self):
+        pass
+
+    def CAB(self):
+        pass
 
     @override
     def _forward_impl(self, x: Tensor) -> Tensor:
@@ -31,15 +37,21 @@ def _resnet(arch: str, block: Type[Union[BasicBlock, Bottleneck]],
             ) -> ResNetCAB:
     model = ResNetCAB(block, layers, **kwargs)
     if pretrained:
-        state_dict = load_state_dict_from_url(
-            model_urls[arch], progress=progress)
-        model.load_state_dict(state_dict)
+        pass
     return model
 
 
 def resNet101(n_class):
 
     model = _resnet('resnet101', Bottleneck, [3, 4, 23, 3], False, False)
+
+    list_dummy = [224, 224, 3, 1]
+    dummy = tensor(list_dummy)
+
+    out = model(dummy)
+
+    print(out.size())
+
     print(model)
     pdb.set_trace()
     model = resnet101(pretrained=True, progress=True)
