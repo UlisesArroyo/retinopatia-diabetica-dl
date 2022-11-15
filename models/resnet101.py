@@ -75,3 +75,7 @@ def resNet101(n_class):
         param.requires_grad = True
 
     return model
+
+
+if __name__ == '__main__':
+    resNet101(5)
