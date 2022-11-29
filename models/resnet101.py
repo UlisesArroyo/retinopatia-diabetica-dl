@@ -1,6 +1,6 @@
 from typing_extensions import override
 from torchvision.models import resnet101
-from attentionblocks import AttnCABfc
+from models.attentionblocks import AttnCABfc
 from torchvision.models.resnet import ResNet, model_urls, BasicBlock, Bottleneck
 from typing import Type, Any, Callable, Union, List, Optional
 from torch import Tensor, tensor, randn
