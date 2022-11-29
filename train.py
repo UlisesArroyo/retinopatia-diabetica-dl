@@ -3,7 +3,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
 from models.resnet101 import resNet101Custom, resNet101Legacy, ResNet101AB
-from models.convnext import convNextSmall
+from models.convnext import convNextSmallCustom, convNextSmallegacy
 from tqdm import tqdm
 from utils.save_info import Util
 from eval import eval
@@ -27,17 +27,20 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
     if model_load is None:
         start_epoch = 0
 
-        if model_str == 'resnet_custom':
-            model = resNet101Custom(classes)
-
         if model_str == 'resnet':
             model = resNet101Legacy(classes)
+
+        if model_str == 'resnet_custom':
+            model = resNet101Custom(classes)
         
         if model_str == 'resnet_abs':
             model = ResNet101AB(classes = 5, k = 5)
 
         if model_str == 'convnext':
-            model = convNextSmall(classes)
+            model = convNextSmallegacy(classes)
+
+        if model_str == 'convnext_custom':
+            model = convNextSmallCustom(classes)
 
         optimizer = torch.optim.Adam(
             model.parameters(), lr, weight_decay=weigth_decay)
