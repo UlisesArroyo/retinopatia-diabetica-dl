@@ -6,16 +6,20 @@ from tqdm import tqdm
 from sklearn.metrics import accuracy_score, precision_score, confusion_matrix
 
 
-def bestEpoch(model_load: str):
+def bestEpoch(model_load: str, set = 'valid',devicef = 1):
 
     checkpoint = torch.load(model_load)
 
     epoch = checkpoint['epoch']
     model = checkpoint['model']
-    device = torch.device(1)
+
+    device = torch.device(devicef)
+
     model.to(device)
-    print(epoch)
-    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 1, 'valid', True)
+
+    print('Ultima epoca: {}'.format(epoch))
+
+    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 1, set, True)
 
 
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
@@ -56,8 +60,10 @@ def eval(model, data: str, batch: int, workers: int, device: str, set: str, save
     print(accuracy_score(trues, preds))
     print(confusion_matrix(trues, preds))
     cfm = confusion_matrix(trues, preds)
-    img_total = [1253, 126, 895, 47, 182]
-    #img_total = [1880, 188, 1344, 71, 275]
+    if set == 'valid':
+        img_total = [1253, 126, 895, 47, 182]
+    if set == 'test':
+        img_total = [1880, 188, 1344, 71, 275]
     print('0: ', float(cfm[0][0])/ img_total[0])
     print('1: ', float(cfm[1][1])/ img_total[1])
     print('2: ', float(cfm[2][2])/ img_total[2])

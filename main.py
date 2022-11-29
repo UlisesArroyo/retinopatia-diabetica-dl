@@ -28,6 +28,8 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weigth_decay', type=float, default=5e-4)
     parser.add_argument('--device', type=int, default=0)
+    parser.add_argument('--set_lr', action='store_true', default=False)
+    parser.add_argument('--patience', type=int, default=3)
 
     # Ubicaciones de archivos
     parser.add_argument('--load_model', default=None)
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.eval and args.load_model is not None:
-        bestEpoch(str(args.load_model))
+        bestEpoch(str(args.load_model), args.set)
 
     if not os.path.exists('./runs'):
         os.makedirs('./runs', exist_ok=True)
@@ -57,7 +59,7 @@ if __name__ == '__main__':
 
     if args.train:
 
-        if args.model is None or args.model not in ['resnet', 'convnext']:
+        if args.model is None or args.model not in ['resnet', 'convnext', 'resnet_custom', 'resnet_abs']:
             print('Elige un modelo a entrenar')
             exit()
 
@@ -88,8 +90,11 @@ if __name__ == '__main__':
 
         epoch, lr, decay_lr, batch, workers, momentum, weigth_decay, device = args.epochs, args.lr, args.decay_lr, args.batch, args.workers, args.momentum, args.weigth_decay, args.device
 
+        patience = args.patience
+        set_lr = args.set_lr
+
         model_load = args.load_model
 
         train(args.model, model_load, json_result, dump,
               dataloader_json, epoch, lr, decay_lr, batch, 1,
-              workers, 1, momentum, weigth_decay, device)
+              workers, 1, momentum, weigth_decay, device, patience, set_lr)

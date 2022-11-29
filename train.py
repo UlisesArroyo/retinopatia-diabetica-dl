@@ -1,7 +1,8 @@
 import torch
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
-from models.resnet101 import resNet101
+from models.resnet101 import resNet101Custom, resNet101Legacy, ResNet101AB
 from models.convnext import convNextSmall
 from tqdm import tqdm
 from utils.save_info import Util
@@ -10,7 +11,7 @@ import os
 
 
 def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay_lr,
-          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, devices):
+          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, devices, patience = 3 ,set_lr = False):
 
     dataloader_train = DataLoader(
         DrDataset(data + 'train.json', 'train'),
@@ -26,8 +27,14 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
     if model_load is None:
         start_epoch = 0
 
+        if model_str == 'resnet_custom':
+            model = resNet101Custom(classes)
+
         if model_str == 'resnet':
-            model = resNet101(classes)
+            model = resNet101Legacy(classes)
+        
+        if model_str == 'resnet_abs':
+            model = ResNet101AB(classes = 5, k = 5)
 
         if model_str == 'convnext':
             model = convNextSmall(classes)
@@ -37,53 +44,47 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
     else:
         checkpoint = torch.load(model_load, map_location=device)
+        
         start_epoch = checkpoint['epoch'] + 1
         model = checkpoint['model']
         optimizer = checkpoint['optimizer']
-        for g in optimizer.param_groups:
-            g['lr'] = lr
+
+        if set_lr:
+            for g in optimizer.param_groups:
+                g['lr'] = lr
 
     criterion = torch.nn.CrossEntropyLoss()
+
     model = model.to(device)
+
     data_eval = './JSONFiles/DDR/DDR_'
 
     best = 0.0
     best_dump = ''
 
-    acc_conteo = []
-    acc = 0.0
-
     factor_lr = decay_lr
+    scheduler = ReduceLROnPlateau(optimizer, 'min', patience = patience, factor=factor_lr)
 
     for epoch in range(start_epoch, epochs):
 
-        if len(acc_conteo) == 5 and epoch > 30:
-            if average(acc_conteo) <= acc:
-                print('Decay lr...')
-                adjust_learning_rate(optimizer, factor_lr)
-                acc_conteo.clear()
-            else:
-                acc_conteo.clear()
-        else:
-            if acc != 0.0:
-                acc_conteo.append(acc)
-
         train_one_epoch(model, dataloader_train, optimizer,
-                        criterion, epoch, device, json_result
-                        )
+                        criterion, epoch, device, json_result)
 
         Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
         print('Evaluando....')
         acc, aps = eval(model, data_eval, batch_s,
                         workers_s, device, 'valid', False)
+        
+        if epoch > 30:
+            scheduler.step(acc)
 
         Util.saveInfoXepoch(os.path.dirname(json_result) +
                             '/info_train_{}.json'.format(model_str), epoch, acc, aps)
 
         if best < acc:
+            best = acc
             best_dump = os.path.dirname(json_result) + \
                 '/{}_best.pth'.format(model_str)
-            best = acc
             Util.save_checkpoint(epoch, model, optimizer, best_dump, model_str)
 
 
