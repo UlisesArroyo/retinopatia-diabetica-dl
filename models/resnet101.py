@@ -127,5 +127,8 @@ def resNet101Custom(n_class):
 
     return model
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 if __name__ == '__main__':
-    resNet101Legacy(5)
+    print(count_parameters(ResNet101AB()))

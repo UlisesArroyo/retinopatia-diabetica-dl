@@ -1,7 +1,19 @@
 from torchvision.models import convnext_small
 from torchvision.models.convnext import LayerNorm2d
 import torch.nn as nn
+from attentionblocks import AttnCABfc
 
+class ConvNextSmallAB(nn.Module):
+    def __init__(self, in_planes = 2048, classes = 5, k = 5):
+        super(ConvNextSmallAB, self).__init__()
+        self.backbone = nn.Sequential(*list(convnext_small(pretrained=True).children())[:-1])
+        self.attnblocks = AttnCABfc(in_planes, classes, k)
+
+    def forward(self, x):
+        x = self.backbone(x)
+        x = self.attnblocks(x)
+
+        return x
 
 def convNextSmallCustom(n_class):
 
@@ -33,7 +45,6 @@ def convNextSmallCustom(n_class):
 def convNextSmallegacy(n_class):
 
     model = convnext_small(pretrained=True, progress=True)
-    print(model)
 
     model.named_children()
     n_inputs = None
@@ -45,12 +56,15 @@ def convNextSmallegacy(n_class):
     sequential_layers = nn.Sequential(
         LayerNorm2d((768,), eps=1e-06, elementwise_affine=True),
         nn.Flatten(start_dim=1, end_dim=-1),
-        nn.Linear(n_inputs, n_class, bias=True),
+        nn.Linear(n_inputs, 5, bias=True),
         nn.LogSoftmax(dim=1)
     )
     model.classifier = sequential_layers
 
     return model
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 if __name__ == '__main__':
-    convNextSmallegacy(5)
+    print(count_parameters(ConvNextSmallAB()))

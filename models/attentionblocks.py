@@ -69,14 +69,14 @@ class AttnCABfc(nn.Module):
         self.cab_ = CAB(in_planes, n_class, k)
         self.avg_pool_ = nn.AdaptiveAvgPool2d(1)
         self.fc_ = nn.Sequential(
-            nn.Linear(in_planes, in_planes),
-            nn.BatchNorm1d(in_planes),
-            nn.ReLU(),
-            nn.Dropout(0.1),
-            nn.Linear(in_planes, in_planes),
-            nn.BatchNorm1d(in_planes),
-            nn.ReLU(),
             nn.Linear(in_planes, n_class),
+            # nn.BatchNorm1d(in_planes),
+            # nn.ReLU(),
+            # nn.Dropout(0.1),
+            # nn.Linear(in_planes, in_planes),
+            # nn.BatchNorm1d(in_planes),
+            # nn.ReLU(),
+            # nn.Linear(in_planes, n_class),
             nn.LogSoftmax(dim=1))
 
     def forward(self, x):
