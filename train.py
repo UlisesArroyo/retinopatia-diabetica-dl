@@ -3,7 +3,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
 from models.resnet101 import resNet101Custom, resNet101Legacy, ResNet101AB
-from models.convnext import convNextSmallCustom, convNextSmallegacy
+from models.convnext import convNextSmallCustom, convNextSmallegacy, ConvNextSmallAB
 from tqdm import tqdm
 from utils.save_info import Util
 from eval import eval
@@ -42,6 +42,12 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
         if model_str == 'convnext_custom':
             model = convNextSmallCustom(classes)
 
+        if model_str == 'convnext_abs_original':
+            model = ConvNextSmallAB(modo='original')
+
+        if model_str == 'convnext_abs_custom':
+            model = ConvNextSmallAB(modo='custom')
+
         optimizer = torch.optim.Adam(
             model.parameters(), lr, weight_decay=weigth_decay)
 
@@ -78,11 +84,17 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
         acc, aps = eval(model, data_eval, batch_s,
                         workers_s, device, 'valid', False)
         
+        Util.saveInfoXepoch(os.path.dirname(json_result) +
+                            '/info_train_{}.json'.format(model_str), epoch, acc, aps, 'valid')
+
+        acc, aps = eval(model, data_eval, batch_s,
+                        workers_s, device, 'train', False)
+        
+        Util.saveInfoXepoch(os.path.dirname(json_result) +
+                            '/info_train_{}.json'.format(model_str), epoch, acc, aps, 'train')
+        
         if epoch > 30:
             scheduler.step(acc)
-
-        Util.saveInfoXepoch(os.path.dirname(json_result) +
-                            '/info_train_{}.json'.format(model_str), epoch, acc, aps)
 
         if best < acc:
             best = acc

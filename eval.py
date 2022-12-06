@@ -51,10 +51,20 @@ def eval(model, data: str, batch: int, workers: int, device: str, set: str, save
 
     if not save:
         cfm = confusion_matrix(trues, preds)
-        img_total = [1253, 126, 895, 47, 182]
-        acc_class = [float(cfm[0][0])/ img_total[0], float(cfm[1][1])/ img_total[1], 
+        if set == 'valid':
+            img_total = [1253, 126, 895, 47, 182]
+
+            acc_class = [float(cfm[0][0])/ img_total[0], float(cfm[1][1])/ img_total[1], 
                         float(cfm[2][2])/ img_total[2], float(cfm[3][3])/ img_total[3], 
                         float(cfm[4][4])/ img_total[4]]
+        
+        if set == 'train':
+            img_total = [3133, 315, 2238, 118, 456]
+
+            acc_class = [float(cfm[0][0])/ img_total[0], float(cfm[1][1])/ img_total[1], 
+                        float(cfm[2][2])/ img_total[2], float(cfm[3][3])/ img_total[3], 
+                        float(cfm[4][4])/ img_total[4]]
+
         return accuracy_score(trues, preds), acc_class
 
     print(accuracy_score(trues, preds))

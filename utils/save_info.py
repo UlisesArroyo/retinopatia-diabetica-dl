@@ -15,12 +15,13 @@ class Util():
         with open(filename, 'w') as file:
             json.dump(data, file)
 
-    def saveInfoXepoch(filename, epoch, acc, aps):
+    def saveInfoXepoch(filename, epoch, acc, aps, data):
 
         with open(filename, 'r') as file:
             datos = json.load(file)
 
         data = {
+            "set": data,
             "epoch": epoch,
             "acc": acc,
             "none": aps[0],

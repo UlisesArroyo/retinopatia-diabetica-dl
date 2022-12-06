@@ -1,13 +1,13 @@
 from torchvision.models import convnext_small
 from torchvision.models.convnext import LayerNorm2d
 import torch.nn as nn
-from attentionblocks import AttnCABfc
+from models.attentionblocks import AttnCABfc
 
 class ConvNextSmallAB(nn.Module):
-    def __init__(self, in_planes = 2048, classes = 5, k = 5):
+    def __init__(self, in_planes = 768, classes = 5, k = 5, modo = 'original'):
         super(ConvNextSmallAB, self).__init__()
         self.backbone = nn.Sequential(*list(convnext_small(pretrained=True).children())[:-1])
-        self.attnblocks = AttnCABfc(in_planes, classes, k)
+        self.attnblocks = AttnCABfc(in_planes, classes, k, modo)
 
     def forward(self, x):
         x = self.backbone(x)

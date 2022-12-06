@@ -63,21 +63,28 @@ class CAB(nn.Module):
 
 
 class AttnCABfc(nn.Module):
-    def __init__(self, in_planes, n_class, k=5):
+    def __init__(self, in_planes, n_class, k=5, mode='custom'):
         super(AttnCABfc, self).__init__()
         self.gab_ = GAB(in_planes)
         self.cab_ = CAB(in_planes, n_class, k)
         self.avg_pool_ = nn.AdaptiveAvgPool2d(1)
-        self.fc_ = nn.Sequential(
-            nn.Linear(in_planes, n_class),
-            # nn.BatchNorm1d(in_planes),
-            # nn.ReLU(),
-            # nn.Dropout(0.1),
-            # nn.Linear(in_planes, in_planes),
-            # nn.BatchNorm1d(in_planes),
-            # nn.ReLU(),
-            # nn.Linear(in_planes, n_class),
-            nn.LogSoftmax(dim=1))
+
+        if mode == 'custom':
+            self.fc_ = nn.Sequential(
+                nn.Linear(in_planes, in_planes),
+                nn.BatchNorm1d(in_planes),
+                nn.ReLU(),
+                nn.Dropout(0.1),
+                nn.Linear(in_planes, in_planes),
+                nn.BatchNorm1d(in_planes),
+                nn.ReLU(),
+                nn.Linear(in_planes, n_class),
+                nn.LogSoftmax(dim=1))
+        else:
+            self.fc_ = nn.Sequential(
+                nn.Linear(in_planes, n_class),
+                nn.LogSoftmax(dim=1))
+
 
     def forward(self, x):
         x = self.gab_(x)        # torch.Size([2, 2048, 7, 7])
