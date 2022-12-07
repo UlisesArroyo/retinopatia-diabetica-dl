@@ -3,10 +3,13 @@ from torchvision.models.convnext import LayerNorm2d
 import torch.nn as nn
 from models.attentionblocks import AttnCABfc
 
+
 class ConvNextSmallAB(nn.Module):
-    def __init__(self, in_planes = 768, classes = 5, k = 5, modo = 'original'):
+    def __init__(self, in_planes=768, classes=5, k=5, modo='original'):
         super(ConvNextSmallAB, self).__init__()
-        self.backbone = nn.Sequential(*list(convnext_small(pretrained=True).children())[:-1])
+
+        self.backbone = nn.Sequential(
+            *list(convnext_small(pretrained=True).children())[:-2])
         self.attnblocks = AttnCABfc(in_planes, classes, k, modo)
 
     def forward(self, x):
@@ -14,6 +17,7 @@ class ConvNextSmallAB(nn.Module):
         x = self.attnblocks(x)
 
         return x
+
 
 def convNextSmallCustom(n_class):
 
@@ -42,6 +46,7 @@ def convNextSmallCustom(n_class):
 
     return model
 
+
 def convNextSmallegacy(n_class):
 
     model = convnext_small(pretrained=True, progress=True)
@@ -63,8 +68,11 @@ def convNextSmallegacy(n_class):
 
     return model
 
+
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
+
 if __name__ == '__main__':
+    #a = ConvNextSmallAB()
     print(count_parameters(ConvNextSmallAB()))
