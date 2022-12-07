@@ -11,7 +11,7 @@ import os
 
 
 def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay_lr,
-          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, devices, patience = 3 ,set_lr = False):
+          batch_t, batch_s, workers_t, workers_s, momentum, weigth_decay, devices, patience=3, set_lr=False):
 
     dataloader_train = DataLoader(
         DrDataset(data + 'train.json', 'train'),
@@ -32,9 +32,9 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
         if model_str == 'resnet_custom':
             model = resNet101Custom(classes)
-        
+
         if model_str == 'resnet_abs':
-            model = ResNet101AB(classes = 5, k = 5)
+            model = ResNet101AB(classes=5, k=5)
 
         if model_str == 'convnext':
             model = convNextSmallegacy(classes)
@@ -53,7 +53,7 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
     else:
         checkpoint = torch.load(model_load, map_location=device)
-        
+
         start_epoch = checkpoint['epoch'] + 1
         model = checkpoint['model']
         optimizer = checkpoint['optimizer']
@@ -72,7 +72,8 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
     best_dump = ''
 
     factor_lr = decay_lr
-    scheduler = ReduceLROnPlateau(optimizer, 'min', patience = patience, factor=factor_lr)
+    scheduler = ReduceLROnPlateau(
+        optimizer, 'min', patience=patience, factor=factor_lr)
 
     for epoch in range(start_epoch, epochs):
 
@@ -81,19 +82,21 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
         Util.save_checkpoint(epoch, model, optimizer, dump, model_str)
         print('Evaluando....')
-        acc, aps = eval(model, data_eval, batch_s,
-                        workers_s, device, 'valid', False)
-        
-        Util.saveInfoXepoch(os.path.dirname(json_result) +
-                            '/info_train_{}.json'.format(model_str), epoch, acc, aps, 'valid')
 
         acc, aps = eval(model, data_eval, batch_s,
                         workers_s, device, 'train', False)
-        
+
         Util.saveInfoXepoch(os.path.dirname(json_result) +
                             '/info_train_{}.json'.format(model_str), epoch, acc, aps, 'train')
-        
+
+        acc, aps = eval(model, data_eval, batch_s,
+                        workers_s, device, 'valid', False)
+
+        Util.saveInfoXepoch(os.path.dirname(json_result) +
+                            '/info_train_{}.json'.format(model_str), epoch, acc, aps, 'valid')
+
         if epoch > 30:
+            print('Decaimiento')
             scheduler.step(acc)
 
         if best < acc:
