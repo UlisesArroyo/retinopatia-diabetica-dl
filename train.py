@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from data.drdataset import DrDataset
 from models.resnet101 import resNet101Custom, resNet101Legacy, ResNet101AB
 from models.convnext import convNextSmallCustom, convNextSmallegacy, ConvNextSmallAB
+from models.resnet50 import ResNet50AB, resNet50Legacy
 from tqdm import tqdm
 from utils.save_info import Util
 from eval import eval
@@ -30,12 +31,18 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
         if model_str == 'resnet':
             model = resNet101Legacy(classes)
 
+        if model_str == 'resnet50':
+            model = resNet50Legacy(classes)
+
+        if model_str == 'resnet50_abs':
+            model = ResNet50AB()
+
         if model_str == 'resnet_custom':
             model = resNet101Custom(classes)
 
         if model_str == 'resnet_abs':
             model = ResNet101AB(classes=5, k=5)
-        
+
         if model_str == 'resnet_abs_custom':
             model = ResNet101AB(classes=5, k=5, modo='custom')
 

@@ -1,14 +1,14 @@
-from torchvision.models import resnet101
+from torchvision.models import resnet50
 from models.attentionblocks import AttnCABfc
 import torch.nn as nn
 import pdb
 
 
-class ResNet101AB(nn.Module):
+class ResNet50AB(nn.Module):
     def __init__(self, in_planes=1024, classes=5, k=5, modo='original'):
-        super(ResNet101AB, self).__init__()
+        super(ResNet50AB, self).__init__()
         self.backbone = nn.Sequential(
-            *list(resnet101(pretrained=True).children())[:-2])
+            *list(resnet50(pretrained=True).children())[:-2])
         self.resize = nn.Conv2d(2048, in_planes, kernel_size=(
             1, 1), stride=(1, 1), bias=True)
         self.attnblocks = AttnCABfc(in_planes, classes, k, mode=modo)
@@ -21,8 +21,8 @@ class ResNet101AB(nn.Module):
         return x
 
 
-def resNet101Legacy(n_class):
-    model = resnet101(pretrained=True, progress=True)
+def resNet50Legacy(n_class):
+    model = resnet50(pretrained=True, progress=True)
 
     n_inputs = model.fc.in_features
 
@@ -39,8 +39,8 @@ def resNet101Legacy(n_class):
     return model
 
 
-def resNet101Custom(n_class):
-    model = resnet101(pretrained=True, progress=True)
+def resNet50Custom(n_class):
+    model = resnet50(pretrained=True, progress=True)
 
     n_inputs = model.fc.in_features
 
