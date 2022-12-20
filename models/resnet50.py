@@ -68,4 +68,4 @@ def count_parameters(model):
 
 
 if __name__ == '__main__':
-    print(count_parameters(ResNet101AB(modo='custom')))
+    print(count_parameters(ResNet50AB(modo='custom')))
