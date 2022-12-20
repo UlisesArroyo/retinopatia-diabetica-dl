@@ -35,6 +35,9 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
         if model_str == 'resnet_abs':
             model = ResNet101AB(classes=5, k=5)
+        
+        if model_str == 'resnet_abs_custom':
+            model = ResNet101AB(classes=5, k=5, modo='custom')
 
         if model_str == 'convnext':
             model = convNextSmallegacy(classes)
