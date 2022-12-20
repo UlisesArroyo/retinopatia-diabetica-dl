@@ -72,14 +72,14 @@ class AttnCABfc(nn.Module):
 
         if mode == 'custom':
             self.fc_ = nn.Sequential(
-                nn.Linear(in_planes, in_planes),
-                nn.BatchNorm1d(in_planes),
+                nn.Linear(in_planes, 2048),
+                nn.BatchNorm1d(2048),
                 nn.ReLU(),
                 nn.Dropout(0.1),
-                nn.Linear(in_planes, in_planes),
-                nn.BatchNorm1d(in_planes),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048),
                 nn.ReLU(),
-                nn.Linear(in_planes, n_class),
+                nn.Linear(2048, n_class),
                 nn.LogSoftmax(dim=1))
         else:
             self.fc_ = nn.Sequential(

@@ -61,7 +61,7 @@ def convNextSmallegacy(n_class):
     sequential_layers = nn.Sequential(
         LayerNorm2d((768,), eps=1e-06, elementwise_affine=True),
         nn.Flatten(start_dim=1, end_dim=-1),
-        nn.Linear(n_inputs, 5, bias=True),
+        nn.Linear(n_inputs, n_class, bias=True),
         nn.LogSoftmax(dim=1)
     )
     model.classifier = sequential_layers
@@ -75,4 +75,4 @@ def count_parameters(model):
 
 if __name__ == '__main__':
     #a = ConvNextSmallAB()
-    print(count_parameters(ConvNextSmallAB()))
+    print(count_parameters(ConvNextSmallAB(modo='custom')))

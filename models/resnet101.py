@@ -6,13 +6,13 @@ import pdb
 
 
 class ResNet101AB(nn.Module):
-    def __init__(self, in_planes=1024, classes=5, k=5):
+    def __init__(self, in_planes=1024, classes=5, k=5, modo='original'):
         super(ResNet101AB, self).__init__()
         self.backbone = nn.Sequential(
             *list(resnet101(pretrained=True).children())[:-2])
         self.resize = nn.Conv2d(2048, in_planes, kernel_size=(
             1, 1), stride=(1, 1), bias=True)
-        self.attnblocks = AttnCABfc(in_planes, classes, k, mode='original')
+        self.attnblocks = AttnCABfc(in_planes, classes, k, mode=modo)
 
     def forward(self, x):
         x = self.backbone(x)
@@ -69,5 +69,4 @@ def count_parameters(model):
 
 
 if __name__ == '__main__':
-    print(ResNet101AB())
-    print(count_parameters(ResNet101AB()))
+    print(count_parameters(ResNet101AB(modo='custom')))
