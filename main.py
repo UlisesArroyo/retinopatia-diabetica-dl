@@ -44,7 +44,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.eval and args.load_model is not None:
-        bestEpoch(str(args.load_model), args.set)
+        bestEpoch(str(args.load_model), args.set, args.device)
 
     if not os.path.exists('./runs'):
         os.makedirs('./runs', exist_ok=True)

@@ -8,18 +8,17 @@ from sklearn.metrics import accuracy_score, precision_score, confusion_matrix
 
 def bestEpoch(model_load: str, set = 'valid',devicef = 1):
 
-    checkpoint = torch.load(model_load)
+    device = torch.device(devicef)
+
+    checkpoint = torch.load(model_load, map_location=device)
 
     epoch = checkpoint['epoch']
     model = checkpoint['model']
-
-    device = torch.device(devicef)
-
     model.to(device)
 
     print('Ultima epoca: {}'.format(epoch))
 
-    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, 1, set, True)
+    eval(model, 'JSONFiles/DDR/DDR_', 1, 1, devicef, set, True)
 
 
 def eval(model, data: str, batch: int, workers: int, device: str, set: str, save: bool = False):
