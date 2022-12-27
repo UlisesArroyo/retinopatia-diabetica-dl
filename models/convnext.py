@@ -5,19 +5,21 @@ from models.attentionblocks import AttnCABfc
 
 
 class ConvNextSmallAB(nn.Module):
-    def __init__(self, in_planes=768, classes=5, k=5, modo='original'):
+    def __init__(self, in_planes=768, classes=5, k=5, modo='original', alpha = 2):
         super(ConvNextSmallAB, self).__init__()
 
         self.backbone = nn.Sequential(
             *list(convnext_small(pretrained=True).children())[:-2])
-        self.attnblocks = AttnCABfc(in_planes, classes, k, modo)
+        self.expand = nn.Conv2d(in_planes, in_planes * alpha, kernel_size=(
+            1, 1), stride=(1, 1), bias=True)
+        self.attnblocks = AttnCABfc(in_planes * alpha, classes, k, modo)
 
     def forward(self, x):
         x = self.backbone(x)
+        x = self.expand(x)
         x = self.attnblocks(x)
 
         return x
-
 
 def convNextSmallCustom(n_class):
 
