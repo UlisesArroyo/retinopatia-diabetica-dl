@@ -5,7 +5,7 @@ from models.attentionblocks import AttnCABfc
 
 
 class ConvNextSmallAB(nn.Module):
-    def __init__(self, in_planes=768, classes=5, k=5, modo='original', alpha = 2):
+    def __init__(self, in_planes=768, classes=5, k=5, modo='original', alpha=2):
         super(ConvNextSmallAB, self).__init__()
 
         self.backbone = nn.Sequential(
@@ -20,6 +20,7 @@ class ConvNextSmallAB(nn.Module):
         x = self.attnblocks(x)
 
         return x
+
 
 def convNextSmallCustom(n_class):
 
@@ -77,4 +78,4 @@ def count_parameters(model):
 
 if __name__ == '__main__':
     #a = ConvNextSmallAB()
-    print(count_parameters(ConvNextSmallAB(modo='custom')))
+    print(count_parameters(convNextSmallegacy(5)))

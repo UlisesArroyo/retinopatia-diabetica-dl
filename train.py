@@ -5,6 +5,7 @@ from data.drdataset import DrDataset
 from models.resnet101 import resNet101Custom, resNet101Legacy, ResNet101AB
 from models.convnext import convNextSmallCustom, convNextSmallegacy, ConvNextSmallAB
 from models.resnet50 import ResNet50AB, resNet50Legacy
+from models.convnext_small import convnext_small
 from tqdm import tqdm
 from utils.save_info import Util
 from eval import eval
@@ -57,6 +58,9 @@ def train(model_str, model_load, json_result, dump: str, data, epochs, lr, decay
 
         if model_str == 'convnext_abs_custom':
             model = ConvNextSmallAB(modo='custom')
+
+        if model_str == 'convnext_small':
+            model = convnext_small(classes=5)
 
         optimizer = torch.optim.Adam(
             model.parameters(), lr, weight_decay=weigth_decay)
