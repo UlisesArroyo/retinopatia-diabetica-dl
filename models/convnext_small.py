@@ -9,19 +9,16 @@ from torchvision.ops.stochastic_depth import StochasticDepth
 from torchvision.ops.misc import ConvNormActivation
 from torchvision._internally_replaced_utils import load_state_dict_from_url
 
+from models.attentionblocks import BlockAttencionCAB
+
 class ConvNeXtSmall(nn.Module):
-    def __init__(self, classes) -> None:
+    def __init__(self, classes, attn = False) -> None:
         super().__init__()
         self.layer_scale = 1e-6
         self.n_layers = [3, 3, 27, 3]
         norm_layer = partial(LayerNorm2d, eps=1e-6)
         prob_sto = 0.011428571428571429
-
-        # self.conv_ini = ConvNormActivation(3, 96, kernel_size=4, 
-        #                                             stride=4, 
-        #                                             padding=0,
-        #                                             norm_layer=norm_layer,
-        #                                             activation_layer=None)
+        count_blocks = 0
         
         layers = []
         features = []
@@ -31,7 +28,9 @@ class ConvNeXtSmall(nn.Module):
                                                     norm_layer=norm_layer,
                                                     activation_layer=None,
                                                     bias=True))
-        count_blocks = 0
+
+        # Bloque 1 [3, 96]
+
         for i in range(self.n_layers[0]):
             if i == 0:
                 layers.append((CNBlock(96, self.layer_scale, 0.0)))
@@ -39,39 +38,43 @@ class ConvNeXtSmall(nn.Module):
                 layers.append((CNBlock(96, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1
 
-        #self.b1 = nn.Sequential(*layers)
-
         features.append(nn.Sequential(*layers))
-
-        # self.resize1 = nn.Sequential(norm_layer(96),
-        #                 nn.Conv2d(96, 192, kernel_size=2, stride=2),)
+        
+        # DownSampling 96 -> 192
         features.append(nn.Sequential(norm_layer(96),
-                        nn.Conv2d(96, 192, kernel_size=2, stride=2),))
+                        nn.Conv2d(96, 192, kernel_size=2, stride=2),
+                        BlockAttencionCAB(in_planes=192, n_class= 5)))
+
+        # Bloque [3, 192]
+
         layers = []
         for i in range(self.n_layers[1]):
             layers.append((CNBlock(192, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1
-        #self.b2 = nn.Sequential(*layers)
-        features.append( nn.Sequential(*layers))
-        # self.resize2 = nn.Sequential(norm_layer(192),
-        #                 nn.Conv2d(192, 384, kernel_size=2, stride=2),)
+        features.append(nn.Sequential(*layers))
+
+        # DownSampling 192 -> 384
 
         features.append(nn.Sequential(norm_layer(192),
-                        nn.Conv2d(192, 384, kernel_size=2, stride=2),))
+                        nn.Conv2d(192, 384, kernel_size=2, stride=2),
+                        BlockAttencionCAB(in_planes=384, n_class= 5)))
+
+        # Bloque [27, 384]
 
         layers = []
         for i in range(self.n_layers[2]):
             layers.append((CNBlock(384, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1 
+        features.append(nn.Sequential(*layers))
 
-        #self.b3 = nn.Sequential(*layers)
-        features.append( nn.Sequential(*layers))
-
-        # self.resize3 = nn.Sequential(norm_layer(384),
-        #                 nn.Conv2d(384, 768, kernel_size=2, stride=2),)
+        # DownSampling 384 -> 768
 
         features.append(nn.Sequential(norm_layer(384),
-                        nn.Conv2d(384, 768, kernel_size=2, stride=2),))
+                        nn.Conv2d(384, 768, kernel_size=2, stride=2),
+                        BlockAttencionCAB(in_planes=768, n_class= 5)))
+        
+        # Bloque [3, 768]
+
         layers = []
         for i in range(self.n_layers[3]):
             if i == 1:
@@ -79,7 +82,7 @@ class ConvNeXtSmall(nn.Module):
             else:
                 layers.append((CNBlock(768, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1
-        #self.b4 = nn.Sequential(*layers)
+
         features.append(nn.Sequential(*layers))
 
         self.features = nn.Sequential(*features)
@@ -154,7 +157,7 @@ def _convnext_small(classes = 1000, pretrained = True):
 
     if pretrained:
             state_dict = load_state_dict_from_url("https://download.pytorch.org/models/convnext_small-0c510722.pth", progress=True)
-            model.load_state_dict(state_dict)
+            model.load_state_dict(state_dict, strict = False)
     return model
 
 def convnext_small(classes, pretrained = True):

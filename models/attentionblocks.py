@@ -62,6 +62,19 @@ class CAB(nn.Module):
         return semantic
 
 
+class BlockAttencionCAB(nn.Module):
+    def __init__(self, in_planes, n_class, k=5):
+        super(BlockAttencionCAB, self).__init__()
+
+        self.gab = GAB(in_planes)
+        self.cab = CAB(in_planes, n_class, k)
+    
+    def forward(self, x):
+        x = self.gab(x)
+        x = self.cab(x)
+        return x
+
+
 class AttnCABfc(nn.Module):
     def __init__(self, in_planes, n_class, k=5, mode='custom'):
         super(AttnCABfc, self).__init__()
