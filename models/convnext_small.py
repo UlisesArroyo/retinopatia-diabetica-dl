@@ -38,11 +38,15 @@ class ConvNeXtSmall(nn.Module):
                 layers.append((CNBlock(96, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1
 
+        self.ab1 = BlockAttencionCAB(in_planes=96, n_class= 5)
+
+        layers.append(self.ab1)
+
         features.append(nn.Sequential(*layers))
         
-        self.ab1 = BlockAttencionCAB(in_planes=192, n_class= 5)
+        
 
-        features.append(self.ab1)
+        #features.append(self.ab1)
 
         # DownSampling 96 -> 192
         features.append(nn.Sequential(
@@ -56,13 +60,17 @@ class ConvNeXtSmall(nn.Module):
         for i in range(self.n_layers[1]):
             layers.append((CNBlock(192, self.layer_scale, prob_sto * count_blocks)))
             count_blocks += 1
+        
+        self.ab2 = BlockAttencionCAB(in_planes=192, n_class= 5)
+        layers.append(self.ab2)
+
         features.append(nn.Sequential(*layers))
 
         # DownSampling 192 -> 384
 
-        self.ab2 = BlockAttencionCAB(in_planes=384, n_class= 5)
+        
 
-        features.append(self.ab2)
+        #features.append(self.ab2)
 
         features.append(nn.Sequential( 
                                       norm_layer(192),
@@ -73,14 +81,15 @@ class ConvNeXtSmall(nn.Module):
         layers = []
         for i in range(self.n_layers[2]):
             layers.append((CNBlock(384, self.layer_scale, prob_sto * count_blocks)))
-            count_blocks += 1 
+            count_blocks += 1
+
+        self.ab3 = BlockAttencionCAB(in_planes=384, n_class= 5)
+        layers.append(self.ab3)
         features.append(nn.Sequential(*layers))
 
         # DownSampling 384 -> 768
 
-        self.ab3 = BlockAttencionCAB(in_planes=768, n_class= 5)
-
-        features.append(self.ab3)
+        #features.append(self.ab3)
 
         features.append(nn.Sequential(
                                       norm_layer(384),
