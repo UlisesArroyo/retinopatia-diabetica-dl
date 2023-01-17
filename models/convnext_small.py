@@ -146,6 +146,7 @@ class CNBlock(nn.Module):
         result = self.layer_scale * self.block(input)
         result = self.stochastic_depth(result)
         result += input
+        print(result.size())
         return result
 
 def count_parameters(model):
