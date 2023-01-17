@@ -41,9 +41,11 @@ class ConvNeXtSmall(nn.Module):
         features.append(nn.Sequential(*layers))
         
         # DownSampling 96 -> 192
-        features.append(nn.Sequential(norm_layer(96),
+        features.append(nn.Sequential(
+                        BlockAttencionCAB(in_planes=96, n_class= 5), 
+                        norm_layer(96),
                         nn.Conv2d(96, 192, kernel_size=2, stride=2),
-                        BlockAttencionCAB(in_planes=192, n_class= 5)))
+                        ))
 
         # Bloque [3, 192]
 
@@ -55,9 +57,9 @@ class ConvNeXtSmall(nn.Module):
 
         # DownSampling 192 -> 384
 
-        features.append(nn.Sequential(norm_layer(192),
-                        nn.Conv2d(192, 384, kernel_size=2, stride=2),
-                        BlockAttencionCAB(in_planes=384, n_class= 5)))
+        features.append(nn.Sequential(BlockAttencionCAB(in_planes=192, n_class= 5),
+                                      norm_layer(192),
+                                      nn.Conv2d(192, 384, kernel_size=2, stride=2)))
 
         # Bloque [27, 384]
 
@@ -69,9 +71,9 @@ class ConvNeXtSmall(nn.Module):
 
         # DownSampling 384 -> 768
 
-        features.append(nn.Sequential(norm_layer(384),
-                        nn.Conv2d(384, 768, kernel_size=2, stride=2),
-                        BlockAttencionCAB(in_planes=768, n_class= 5)))
+        features.append(nn.Sequential(BlockAttencionCAB(in_planes=384, n_class= 5),
+                                      norm_layer(384),
+                                      nn.Conv2d(384, 768, kernel_size=2, stride=2)))
         
         # Bloque [3, 768]
 
@@ -146,7 +148,6 @@ class CNBlock(nn.Module):
         result = self.layer_scale * self.block(input)
         result = self.stochastic_depth(result)
         result += input
-        print(result.size())
         return result
 
 def count_parameters(model):
